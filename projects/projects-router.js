@@ -21,14 +21,16 @@ async function validateProject(req, res, next) {
 }
 
 function validateNewProject(req, res, next) {
-    const { name, description } = req.body;
+    let { name, description, completed } = req.body;
     const errors = [];
     try {
-        if (name) {
-            if (name.length > 128) errors.push({ error: "Name field limit is 128 characters" });
+        if (name || req.method !== "POST") {
+            if (name && name.length > 128) errors.push({ error: "Name field limit is 128 characters" });
             if (description && description.length > 128) errors.push({ error: "Description field limit is 128 characters" });
+            if (completed && !(typeof completed === 'boolean' || (typeof completed === 'integer' && completed < 2))) errors.push({ error: "Completed must be boolean or 1 or 0" });
             if (errors.length === 0) {
-                req.project = { name, description };
+                completed = completed || false;
+                req.project = { name, description, completed };
                 next();
             } else {
                 res.status(400).json(errors);
@@ -42,14 +44,16 @@ function validateNewProject(req, res, next) {
 }
 
 function validateNewAction(req, res, next) {
-    const { notes, description } = req.body;
+    let { notes, description, completed } = req.body;
     const errors = [];
     try {
-        if (description) {
-            if (description.length > 128) errors.push({ error: "Description field limit is 128 characters" });
+        if (description || req.method !== "POST") {
+            if (description && description.length > 128) errors.push({ error: "Description field limit is 128 characters" });
             if (notes && notes.length > 128) errors.push({ error: "Notes field limit is 128 characters" });
+            if (completed && !(typeof completed === 'boolean' || (typeof completed === 'integer' && completed < 2))) errors.push({ error: "Completed must be boolean or 1 or 0" });
             if (errors.length === 0) {
-                req.action = { notes, description };
+                completed = completed || false;
+                req.action = { notes, description, completed };
                 next();
             } else {
                 res.status(400).json(errors);
@@ -80,12 +84,31 @@ router.get('/:id', validateProject, async (req, res) => {
     }
 })
 
+
 router.post('/', validateNewProject, async (req, res) => {
     try {
         const proj = await ProjectsDB.insert(req.project);
         res.status(201).json(proj);
     } catch (error) {
         res.status(500).json({ error: "Couldn't add project" });
+    }
+})
+
+router.put('/:id', validateProject, validateNewProject, async (req, res) => {
+    try {
+        const proj = await ProjectsDB.update(req.project, req.params.id);
+        res.status(201).json(proj);
+    } catch (error) {
+        res.status(500).json({ error: "Couldn't update project" });
+    }
+})
+
+router.delete('/:id', validateProject, async (req, res) => {
+    try {
+        const proj = await ProjectsDB.remove(req.project.id);
+        res.status(200).json(proj);
+    } catch (error) {
+        res.status(500).json({ error: "Couldn't delete project" });
     }
 })
 
@@ -98,4 +121,8 @@ router.post('/:id', validateProject, validateNewAction, async (req, res) => {
     }
 })
 
-module.exports = router;
+module.exports = {
+    router,
+    validateNewAction,
+    validateProject,
+};
