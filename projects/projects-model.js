@@ -32,7 +32,7 @@ function getProjectActions(id) {
 
 async function getProjectWithActions(id) {
     const proj = await findById(id);
-    proj.actions = getProjectActions(id);
+    proj.actions = await getProjectActions(id);
     return proj;
 }
 
@@ -77,7 +77,7 @@ function updateAction(fields, id) {
         .then(() => findAction(id));
 }
 
-function removeAction(id) {
+async function removeAction(id) {
     const act = await findAction(id);
     return db('actions')
         .where({ id: Number(id) })

@@ -4,18 +4,20 @@ const ProjectsDB = require('./projects-model.js');
 
 const router = express.Router();
 
-function validateProject(req, res, next) {
+async function validateProject(req, res, next) {
     if (req.params.id) {
         try {
-            const proj = ProjectsDB.findById(req.params.id);
+            const proj = await ProjectsDB.findById(req.params.id);
             if (!proj) throw new Error('Project null');
             req.project = proj;
             next();
         } catch (error) {
             res.status(404).json({ error: "Project id not valid" });
+            return;
         }
+    } else {
+        next();
     }
-    next();
 }
 
 function validateNewProject(req, res, next) {
@@ -62,7 +64,7 @@ function validateNewAction(req, res, next) {
 
 router.get('/', async (req, res) => {
     try {
-        const projects = ProjectsDB.find();
+        const projects = await ProjectsDB.find();
         res.status(200).json(projects);
     } catch (error) {
         res.status(500).json({ error: "Couldn't get projects" });
@@ -89,9 +91,11 @@ router.post('/', validateNewProject, async (req, res) => {
 
 router.post('/:id', validateProject, validateNewAction, async (req, res) => {
     try {
-        const act = await ProjectsDB.insertAction(req.action);
+        const act = await ProjectsDB.insertAction(req.action, req.project.id);
         res.status(201).json(act);
     } catch (error) {
         res.status(500).json({ error: "Couldn't create action" });
     }
 })
+
+module.exports = router;
