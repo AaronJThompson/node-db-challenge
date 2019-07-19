@@ -1,5 +1,19 @@
 const db = require('./dbConfig');
 
+module.exports = {
+    find,
+    findById,
+    getProjectActions,
+    getProjectWithActions,
+    insert,
+    remove,
+    update,
+    findAction,
+    insertAction,
+    updateAction,
+    removeAction,
+}
+
 function find() {
     return db('projects');
 }
@@ -12,7 +26,14 @@ function findById(id) {
 
 function getProjectActions(id) {
     return db('actions')
+        .select(['id', 'description', 'notes', 'completed'])
         .where({ project_id: Number(id) });
+}
+
+async function getProjectWithActions(id) {
+    const proj = await findById(id);
+    proj.actions = getProjectActions(id);
+    return proj;
 }
 
 function insert(proj) {
