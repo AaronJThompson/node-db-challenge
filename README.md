@@ -33,9 +33,23 @@ This will be akin to the Web API that you built in the last sprint, only this ti
 Demonstrate your understanding of this week's concepts by answering the following free-form questions. Edit this document to include your answers after each question. Make sure to leave a blank line above and below your answer so it is clear and easy to read by your project manager.
 
 1. Explain the difference between `Relational Databases` and `SQL`.
-1. Why do tables need a `primary key`?
-1. What is the name given to a table column that references the primary key on another table.
-1. What do we need in order to have a _many to many_ relationship between two tables.
+
+A: Relational Databases are databases that store discrete related data in seperated tables, linking them through primary and foreign keys. This allows for data to become less redundant by being added once, and then linked to through it's key. It also allows for data entries to have varying amounts of related data by having related data link back to the parent, allowing for relations such as one-to-many. 
+
+SQL on the other hand is a query language used to perform queries on relational databases. It in itself is not a DBMS (database management system), however it is closely linked to many RDBMS' (Relational DBMS) due to it's ability to manage data in RDBMS' so well.
+
+1. Why do tables need a `primary key`? 
+
+A: Tables need a primary key so they can be distinguished from each other and be referenced to. A primary key must be unqiue so that data can be referenced to individually. Without a primary key, foreign keys can't be created and therefore relational databases can't be exist with relationships between tables.
+
+1. What is the name given to a table column that references the primary key on another table. 
+
+A: This is called a foreign key.
+
+1. What do we need in order to have a _many to many_ relationship between two tables. 
+
+A: Direct many to many relationsips cannot exist as it would require a varying amount of foreign keys and therefore a varying amount of columns. To create a many to many relationship, a intermidiary table must be created. This is a table that simply stores the relationships betweem these tables, having a column for each foreign key to the tables. This allows us to store rows of relationships. 
+
 
 ## Project Set Up
 
