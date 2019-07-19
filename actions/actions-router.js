@@ -48,4 +48,13 @@ router.get('/:id', validateAction, async (req, res) => {
     }
 })
 
+router.get('/', async (req, res) => {
+    try {
+        const actions = await ActionsDB.find();
+        res.status(200).json(actions);
+    } catch (error) {
+        res.status(500).json({ error: "Couldn't get actions" });
+    }
+})
+
 module.exports = router;
