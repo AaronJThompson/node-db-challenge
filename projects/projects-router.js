@@ -1,7 +1,7 @@
 const express = require('express');
 
 const ProjectsDB = require('./projects-model.js');
-
+const ActionsDB = require('../actions/actions-model');
 const router = express.Router();
 
 async function validateProject(req, res, next) {
@@ -114,7 +114,7 @@ router.delete('/:id', validateProject, async (req, res) => {
 
 router.post('/:id', validateProject, validateNewAction, async (req, res) => {
     try {
-        const act = await ProjectsDB.insertAction(req.action, req.project.id);
+        const act = await ActionsDB.insertAction(req.action, req.project.id);
         res.status(201).json(act);
     } catch (error) {
         res.status(500).json({ error: "Couldn't create action" });

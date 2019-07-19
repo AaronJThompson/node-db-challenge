@@ -1,5 +1,4 @@
 const db = require('../data/dbConfig');
-
 module.exports = {
     find,
     findById,
@@ -8,10 +7,6 @@ module.exports = {
     insert,
     remove,
     update,
-    findAction,
-    insertAction,
-    updateAction,
-    removeAction,
 }
 
 function find() {
@@ -55,32 +50,4 @@ function update(fields, id) {
         .where({ id: Number(id) })
         .update(fields)
         .then(() => findById(id));
-}
-
-function findAction(id) {
-    return db('actions')
-        .where({ id: Number(id) })
-        .then(ids => ids[0]);
-}
-
-function insertAction(action, id) {
-    const actionWithProj = {...action, project_id: Number(id)};
-    return db('actions')
-        .insert(actionWithProj)
-        .then(ids => findAction(ids[0]));
-}
-
-function updateAction(fields, id) {
-    return db('actions')
-        .where({ id: Number(id) })
-        .update(fields)
-        .then(() => findAction(id));
-}
-
-async function removeAction(id) {
-    const act = await findAction(id);
-    return db('actions')
-        .where({ id: Number(id) })
-        .del()
-        .then(() => act);
 }
