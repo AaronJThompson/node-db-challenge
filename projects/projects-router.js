@@ -18,6 +18,26 @@ function validateProject(req, res, next) {
     next();
 }
 
+function validateNewProject(req, res, next) {
+    const { name, description } = req.body;
+    const errors = [];
+    try {
+        if (name) {
+            if (name.length > 128) errors.push({ error: "Name field limit is 128 characters" });
+            if (description && description.length > 128) errors.push({ error: "Description field limit is 128 characters" });
+            if (errors.length === 0) {
+                req.project = { name, description };
+                next();
+            } else {
+                res.status(400).json(errors);
+            }
+        } else {
+            throw new Error('Name is required');
+        }
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
 
 router.get('/', async (req, res) => {
     try {
@@ -34,5 +54,14 @@ router.get('/:id', validateProject, async(req, res) => {
         res.status(200).json(proj);
     } catch (error) {
         res.status(500).json({ error: "Couldn't get project" });
+    }
+})
+
+router.post('/', validateNewProject, async (req, res) => {
+    try {
+        const proj = await ProjectsDB.insert(req.project);
+        res.status(201).json(proj);
+    } catch (error) {
+        res.status(500).json({ error: "Couldn't add project" });
     }
 })
